@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}
+<title>Content</title>
+{% endblock %}
+
+{% block body %}
+    <h3>Content of {{ filename }}</h3>
+    <br>
+{% for data in content %}
+    <h6>{{ data }}</h6>
+    {% endfor %}
+
+
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}
+<title>Deployments</title>
+{% endblock %}
+
+{% block body %}
+
+    <div class="row" style="padding: 10px">
+
+
+
+        <div class="col-md-10">
+            {% if cloning_error %}
+            <p  class="alert alert-warning">{{ cloning_error }}</p>
+            {% endif %}
+        {% if ports %}
+            <div class="alert alert-success">
+                <h6>Your project is running on these ports.</h6>
+                <ul>
+                {%for port in ports %}
+                    <li>{{ port }}</li>
+            {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        </div>
+        <div class="co-md-5">
+            <p class="alert alert-secondary" id="message-container" style="display:none"></p>
+            <form method="get" action="/projectDeployment">
+                <div id="input_url_block">
+                    <p style="font-weight: bold">Please enter the github repository url in the field below to get started.</p>
+                    <input type="text" name="url" id="github_url" class="form-control">
+                        <br>
+                    <button  class="btn btn-outline-info"  id="clone">Clone</button>
+                    </div>
+                <input type="submit" id="btn_next" value="Next"
+                       class="btn btn-primary"
+                       style="display: none">
+                </form>
+
+    </div><!--row 1 complete-->
+    </div>
+
+    <h4>Deployed Projects</h4>
+
+    <table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">GitHub URL</th>
+        <th></th>
+
+
+
+    </tr>
+  </thead>
+  <tbody>
+  {% if github %}
+    {% for data in github %}
+        <tr>
+          <th scope="row">{{ forloop.counter }}</th>
+            <td><a href="/monitoring?url={{ data.url }}">{{data.url}}</a></td>
+            <td><a class="btn btn-danger" style="color: white" href="/deleteProject?url={{ data.url }}">Delete</a></td>
+
+    </tr>
+
+        {% endfor %}
+    {% endif %}
+  </tbody>
+</table>
+
+
+
+
+{% endblock %}<!--end body block-->
+
+{% block script %}
+   <script>
+
+$(document).ready(function() {
+    $("#clone").click(function (e) {
+        e.preventDefault();
+        var url=document.getElementById("github_url").value;
+
+        if (url==""){
+            alert("URL is required");
+            return;
+        }
+        document.getElementById("input_url_block").style.display="none";
+        var message_container=document.getElementById("message-container");
+        message_container.style.display="block";
+        message_container.innerText="Start cloning..";
+        $.ajax({
+            type: "GET",
+            url: "/github_cloning/?url="+url,
+            success: function (responce) {
+                if (responce.error) {
+                    alert(responce.error);
+                }
+                else if(responce.status) {
+
+                        message_container.innerText="Cloning finish..";
+                        document.getElementById("btn_next").style.display="block";
+                    $("#error-box").empty();
+                    $("#error-box").append(responce.Error);
+                }
+
+            }//close success
+        });//close ajax
+    });//close #dockerImage.click
+});
+    </script>
+{% endblock %}

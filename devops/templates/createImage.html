@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block body %}
+
+
+    {% if error_message %}
+        <p class="alert alert-warning">{{ error_message }}</p>
+        <a style='color:white' class="btn btn-primary" href="{% url 'deploy' %}">Clone project</a>
+
+
+
+
+    {% elif request.session.isImageCreated %}
+            <p class="alert alert-success">Docker image has been created.</p>
+            <p>The next step is to create the helm chart for the created docker image, to make the first deployment.</p>
+            <a class ='btn btn-primary'  style="color:white" href="{% url 'createHelmChart' %}">Create Helm Chart</a>
+    {% elif request.session.isHelmChartCreated %}
+        <h4 style='align-content: center' class="alert alert-info">Helm chart has been created for project. {{ request.session.url }}</h4>
+        <h5>Move to the <a href="{% url 'deploy' %}">Home</a> page to start monitoring.</h5>
+    {% else %}
+          <p>GitHub project cloning has been done successfully. The next step is to create a docker image of cloned project.</p>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="submit" class="btn btn-dark btn-lg" value="Create docker image">
+        </form>
+    {% endif %}
+
+
+
+{% endblock %}

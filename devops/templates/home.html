@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block style %}
+<link rel="stylesheet" href="{% static "css/home.css" %}"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+{% endblock %}
+
+{% block body %}
+<img src="{% static "images/cover.jpeg" %}" style="width: 100%;">
+    <h1>About us</h1>
+        <br>
+    <p >We implement a system which is able to generate website usage metrices in json format and monitor it
+    to perform necessary updates on deployment yaml and dockerfiles. The goal is to monitor the RAM and CPU usage of kubernetes pod and
+        docker container. We are generating fake usage metrices in our project. In order to get real metrices we need a real website having very huge number of users per hour (not feasible for us).
+    .Out project consist of 2 modules</p>
+    <h3>1-Github project cloniong and deployment</h3>
+    <p>In this module system clone (download) github project url provided by us and then create a docker image of it and push that
+        docker image to docker hub.
+    At the end system create 2 files for deployment purpose one is <b>services.yaml</b> and other is <b>deployment.yaml</b>, both files can be use to deploy our cloned project and then project will accessible from localhost</p>
+    <h3>2-Generating data and monitoring</h3>
+    <p>In this module system will generate <b>data.json</b> and <b>config.json</b> files. Monitor the data.json file and if system found that metrices exceeding threshoild values
+        then generate new services.yaml, deployment.yaml and dockerfile according to the requirements define in the config.json file</p>
+
+
+
+  <h1>What is the purpose of new generated files ?</h1>
+    <p>You will get 3 types of files for deployment</p>
+    <ul>
+    <li>Dockerfile</li>
+    <li>services.yaml</li>
+    <li>deployment.yaml</li>
+    </ul>
+    <h3>Dockerfile</h3>
+    <p>This file define how many containers you need to create. It's upto you how you want to create container from same dockerImage from different dockerImage</p>
+    <h3>deployment.yaml</h3>
+    <p>This file include the defination of our docker image. Every file define only one docker image</p>
+    <h3>services.yaml</h3>
+    <p>This define how many services (endoints) we need for a specific deploymnent.It can be localhost:3000</p>
+
+    <h1>How to use new generated file ?</h1>
+    <p>Procedure include following steps</p>
+    <ul>
+    <li>Create a dockerImage from dockerFile.</li>
+        <ul>
+            <li>docker build -t yourDockerHubUsername/appName:tagName</li>
+        </ul>
+    <li>push dockerImage to your docker hub account</li>
+        <ul>
+            <li>docker push dockerImageName</li>
+        </ul>
+    <li>Write the name of your pushed docker image in deployment.yaml file</li>
+    <li>Deploy the deployment.yaml and services.yaml on kubernetes by these commands</li>
+    <ul>
+        <li>kubectl apply -f deployment.yaml</li>
+        <li>kubectl apply -f services.yaml</li>
+    </ul>
+    </ul>
+ <h1>Future work</h1>
+    <p>Usage metrices of real website can be get by using prometheus or any other latest tool and then monitoring can be
+    apply on those real metrices. Also can work on complete data driven website and using volumes and databases in dockerfiles</p>
+
+<h1>Tools and technologies<i class="fas fa-tools"></i></h1>
+    <div class="row tools_tech" >
+    <div class="col-sm-4 col-md-6 col-lg-4">
+        <img style="height:150px;width:160px;" src="{% static "images/docker logo.png" %}"/>
+    </div>
+    <div class="col-sm-4 col-md-6 col-lg-4">
+        <img  style="height:150px;width:160px;" src="{% static "images/kubernetes logo.png" %}"/>
+    </div>
+       <div class="col-sm-4 col-md-6 col-lg-4">
+        <img   style="height:150px;width:160px;"src="{% static "images/python.png" %}"/>
+    </div>
+       <div class="col-sm-4 col-md-6 col-lg-4">
+        <img   style="height:150px;width:160px;"src="{% static "images/pycharm.png" %}"/>
+    </div>
+       <div class="col-sm-4 col-md-6 col-lg-4">
+        <img  style="height:150px;width:160px;" src="{% static "images/github.png" %}"/>
+    </div>
+       <div class="col-sm-4 col-md-6 col-lg-4">
+        <img   style="height:150px;width:160px;"src="{% static "images/django-logo-1.png" %}"/>
+    </div>
+
+    </div>
+
+{% endblock %}

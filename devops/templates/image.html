@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block body %}
+    <h2>GitHub  repository has been cloned successfully. The next step is to create docker image and yaml files for cloned GitHub Project.</h2>
+    <p class="alert alert-warning">This process may take long to proceed. It includes 3 things, dockerImage creation, push image and Helm Chart (yaml files) creation.</p>
+    <form method="post">
+    {% csrf_token %}
+        <input  type="submit"  class="btn btn-secondary" value="Continue"></input>
+    </form>
+
+
+{% endblock %}

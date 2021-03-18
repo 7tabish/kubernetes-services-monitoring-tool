@@ -1,0 +1,11 @@
+asgiref==3.2.3
+bootstrap4==0.1.0
+Django==3.0.3
+django-crispy-forms==1.8.1
+gitdb2==3.0.2
+GitPython==3.0.8
+pytz==2019.3
+PyYAML==5.3.1
+smmap==3.0.4
+smmap2==2.0.5
+sqlparse==0.3.0

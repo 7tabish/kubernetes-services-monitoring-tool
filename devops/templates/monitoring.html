@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}
+<title>Monitoring</title>
+{% endblock %}
+{% block style %}
+<style>
+#api_result{
+    background-color: lightgrey;
+    padding:15px;
+}
+div h5{
+    text-align: center;
+}
+#monitoringResult ul{
+list-style: none;
+}
+#monitoringResult ul li{
+    padding:15px;
+    margin: 10px;
+    border-bottom:1px solid lightslategray;
+    outline-color: deepskyblue;
+    transition: transform .3s;
+}
+#monitoringResult ul li a{
+    color:black;
+}
+
+#monitoringResult ul li:hover{
+    transform: scale(1.3);
+}
+.container a{
+    color:white;
+      transition: transform .3s;
+}
+.container a:hover{
+    color:white;
+  transform: scale(1.3);
+}
+
+</style>
+{% endblock %}
+
+{% block body %}
+
+ <div class="container">
+ {% if endpoints %}
+     <div class="alert alert-info">
+     <p>You project is running on these ports</p>
+     <ul>
+    {% for endpoint in endpoints %}
+        <li>{{ endpoint.ports }}</li>
+
+     {% endfor %}
+     </ul>
+     </div>
+ {% endif %}
+  {% if project_notFound %}
+     <p class="alert alert-warning">{{ project_notFound }}</p>
+     <p>You need to clone the project from <a href="{% url 'deploy' %}">here.</a></p>
+
+     {% else %}
+      <p>Chart, Values, Services and Deployment files are from defualt Helm Chart</p>
+         <a class="btn btn-lg btn-primary" id="dockerFile">Dockerfile</a>
+        <a class="btn btn-lg btn-primary" id ="chartFile">Chart.yaml</a>
+      <a class="btn btn-lg btn-primary" id ="valuesFile">Values.yaml</a>
+      <a class="btn btn-lg btn-primary" id ="servicesFile">Services.yaml</a>
+      <a class="btn btn-lg btn-primary" id ="deploymentFile">Deployments.yaml</a>
+      <br><br>
+      <a class="btn btn-lg btn-success" id="startMonitoring">Start Monitoring</a>
+
+      <br><br><br>
+      <div id="api_result">
+
+      </div>
+
+      <div id="monitoringResult" class="row">
+
+      <div class="col-sm-3">
+                <h5 style="text-align: center" id="configHead"></h5>
+                <ul id="configFiles"></ul>
+      </div>
+
+      <div class="col-sm-3">
+          <h5 id="dockerHead"></h5>
+          <ul id="dockerFiles"></ul>
+      </div>
+
+      <div class="col-sm-3">
+          <h5 id="yamlHead"></h5>
+          <ul id="yamlFiles"></ul>
+      </div>
+      <div class="col-sm-3">
+          <h5 id="helmHead"></h5>
+          <ul id="helmFiles"></ul>
+      </div>
+
+      </div>
+ <br><br>
+
+     {% if dockerFileContent %}
+         <div class="col-md-5" style="background: lightgrey;padding:15px">
+         <h4 style="text-align: center">Default Dockerfile</h4>
+         {% for content in dockerFileContent %}
+             <p>{{ content }}</p>
+         {% endfor %}
+         </div>
+         {% endif %}
+
+ </div>
+        {% endif %}
+{% endblock %}
+
+{% block script %}
+<script>
+var urlParams = new URLSearchParams(window.location.search);
+url=urlParams.get('url')
+
+$(document).ready(function() {
+$("#dockerFile").click(function(e) {
+    e.preventDefault();
+   $.ajax({
+       type: "GET",
+       url: "/getDeploymentFile?type=defDocker&filename=Dockerfile&url="+url,
+       success:function (responce) {
+           if(responce.error){
+               alert(responce.error);
+           }
+           else{
+
+                $("#api_result").empty();
+                $("#configHead").empty();
+                $('#dockerHead').empty();
+                $('#yamlHead').empty();
+                $("#configFiles").empty();
+                $("#dockerFiles").empty();
+                $("#yamlFiles").empty();
+                $('#helmHead').empty();
+
+               $.each(responce.data,function(id,line){
+                $("#api_result").append("<li>"+line+"</li>");
+               })
+
+           }
+
+       }//close success
+   });//close ajax
+});//close #dockerImage.click
+
+ $("#valuesFile").click(function(e) {
+    e.preventDefault();
+   $.ajax({
+       type: "GET",
+       url: "/getDeploymentFile?type=defYaml&filename=values.yaml&url="+url,
+       success:function (responce) {
+           if(responce.error){
+               alert(responce.error);
+           }
+           else{
+
+                $("#api_result").empty();
+                $("#configHead").empty();
+                $('#dockerHead').empty();
+                $('#yamlHead').empty();
+                $("#configFiles").empty();
+                $("#dockerFiles").empty();
+                $("#yamlFiles").empty();
+                $('#helmHead').empty();
+               $.each(responce.data,function(id,line){
+                $("#api_result").append("<p>"+line+"<p>");
+               })
+
+           }
+
+       }//close success
+   });//close ajax
+});//close #servicesFile.click
+
+     $("#chartFile").click(function(e) {
+    e.preventDefault();
+   $.ajax({
+       type: "GET",
+       url: "/getDeploymentFile?type=defYaml&filename=Chart.yaml&url="+url,
+       success:function (responce) {
+           if(responce.error){
+               alert(responce.error);
+           }
+           else{
+
+                $("#api_result").empty();
+                $("#configHead").empty();
+                $('#dockerHead').empty();
+                $('#yamlHead').empty();
+                $("#configFiles").empty();
+                $("#dockerFiles").empty();
+                $("#yamlFiles").empty();
+                $('#helmHead').empty();
+               $.each(responce.data,function(id,line){
+                $("#api_result").append("<p>"+line+"<p>");
+               })
+
+           }
+
+       }//close success
+   });//close ajax
+});//close #servicesFile.click
+
+
+    $("#servicesFile").click(function(e) {
+    e.preventDefault();
+   $.ajax({
+       type: "GET",
+       url: "/getDeploymentFile?type=defYaml&filename=service.yaml&url="+url,
+       success:function (responce) {
+           if(responce.error){
+               alert(responce.error);
+           }
+           else{
+
+                $("#api_result").empty();
+                $("#configHead").empty();
+                $('#dockerHead').empty();
+                $('#yamlHead').empty();
+                $("#configFiles").empty();
+                $("#dockerFiles").empty();
+                $("#yamlFiles").empty();
+                $('#helmHead').empty();
+               $.each(responce.data,function(id,line){
+                $("#api_result").append("<p>"+line+"<p>");
+               })
+
+           }
+
+       }//close success
+   });//close ajax
+});//close #servicesFile.click
+
+
+
+
+    $("#deploymentFile").click(function(e) {
+    e.preventDefault();
+   $.ajax({
+       type: "GET",
+       url: "/getDeploymentFile?type=defYaml&filename=deployment.yaml&url="+url,
+       success:function (responce) {
+           if(responce.error){
+               alert(responce.error);
+           }
+           else{
+
+                $("#api_result").empty();
+                $("#configHead").empty();
+                $('#dockerHead').empty();
+                $('#yamlHead').empty();
+                $("#configFiles").empty();
+                $("#dockerFiles").empty();
+                $("#yamlFiles").empty();
+                $('#helmHead').empty();
+               $.each(responce.data,function(id,line){
+                $("#api_result").append("<p>"+line+"<p>");
+               })
+
+           }
+
+       }//close success
+   });//close ajax
+});//close #deploymentFile.click
+
+
+    $("#startMonitoring").click(function(e) {
+    e.preventDefault();
+
+    {#$("#head1").html("Configuration & data files");#}
+    {#$('#head2').html("Dockerfile");#}
+           $.ajax({
+       type: "GET",
+       url: "/startMonitoring?url="+url,
+       success:function (responce) {
+           if(responce.error){
+               alert(responce.error);
+           }
+           else{
+
+                $("#api_result").empty();
+                $("#configFiles").empty();
+                $("#dockerFiles").empty();
+                $("#yamlFiles").empty();
+
+                $("#configHead").html("Configuration & data files");
+                $('#dockerHead').html("Dockerfile");
+                $('#yamlHead').html("Yaml files");
+                $('#helmHead').html("Helm deployments");
+
+               $.each(responce.data['files'],function(id,record){
+                   if(record['config']){
+                       $.each(record['config'],(id,config)=>{
+                         $("#configFiles").append('<li><a  href=/getDeploymentFile?type=newConfig&filename='+config+'&url='+responce.data['url']+'>'+config+'</a></li>');
+                       })
+
+                   }
+
+                   if (record['dockerfile']){
+                        $.each(record['dockerfile'],(id,dockerfile)=>{
+                                                   $("#dockerFiles").append('<li><a href=/getDeploymentFile?type=newDocker&filename='+dockerfile+'&url='+responce.data['url']+'>'+dockerfile+'</a></li>');
+                       })
+                   }
+                   if (record['yaml']){
+                       $.each(record['yaml'],(id,yaml)=>{
+                                                    $("#yamlFiles").append('<li><a  href=/getDeploymentFile?type=newyaml&filename='+yaml+'&url='+responce.data['url']+'>'+yaml+'</a></li>');
+                       })
+                   }
+
+                   if (record['helm']){
+
+                       $.each(record['helm'],(id,helm)=>{
+                           $("#helmFiles").append('<li><a  href=/getDeploymentFile?type=newHelm&filename='+helm+'&url='+responce.data['url']+'>'+helm+'</a></li>');
+
+                       })
+                   }
+
+               })
+
+           }
+
+       }//close success
+   });//close ajax
+
+});//close #startMonitoring
+
+});//close document.ready
+
+function  runTask1() {
+    alert("Ggg");
+}
+</script>
+{% endblock %}
